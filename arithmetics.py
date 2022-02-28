@@ -85,6 +85,9 @@ class Evaluate:
 		while "/" in equation:
 			regex = re.search(r"(-?\d*\.?\d*)/(-?\d+\.?\d*)", equation)
 			if regex != None:
+				if regex.group(2) == "0" or regex.group(2) == "0.0":
+					equation = "Error, division by zero"
+					return equation
 				result = ArithmeticOperators.div(regex.group(1), regex.group(2))
 				equation = equation[0:regex.start()] + result + equation[regex.end():]
 		while "+" in equation:
@@ -98,13 +101,12 @@ class Evaluate:
 			if equation[0] == "-":
 				if equation.count("-") == 1:
 					break
-			else:
-				regex = re.search(r"(-?\d+\.?\d*)-(-?\d+\.?\d*)", equation)
-				if regex != None:
-					if regex.group(2)[0] == "-":
-						result = ArithmeticOperators.sub(regex.group(1), regex.group(2))
-					else:
-						result = ArithmeticOperators.sub(regex.group(1), regex.group(2))
-					equation = equation[0:regex.start()] + result + equation[regex.end():]
+			regex = re.search(r"(-?\d+\.?\d*)-(-?\d+\.?\d*)", equation)
+			if regex != None:
+				if regex.group(1)[0] == "-" and regex.group(2)[0] == "-":
+					result = ArithmeticOperators.add(regex.group(1), (regex.group(2) * -1))
+				else:
+					result = ArithmeticOperators.sub(regex.group(1), regex.group(2))
+				equation = equation[0:regex.start()] + result + equation[regex.end():]
 
 		return equation
